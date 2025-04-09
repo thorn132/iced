@@ -211,12 +211,11 @@ pub async fn new<W: compositor::Window>(
 }
 
 /// Presents the given primitives with the given [`Compositor`].
-pub fn present<T: AsRef<str>>(
+pub fn present(
     renderer: &mut Renderer,
     surface: &mut wgpu::Surface<'static>,
     viewport: &Viewport,
     background_color: Color,
-    overlay: &[T],
     on_pre_present: impl FnOnce(),
 ) -> Result<(), compositor::SurfaceError> {
     match surface.get_current_texture() {
@@ -230,7 +229,6 @@ pub fn present<T: AsRef<str>>(
                 frame.texture.format(),
                 view,
                 viewport,
-                overlay,
             );
 
             // Present the frame
@@ -343,13 +341,12 @@ impl graphics::Compositor for Compositor {
         }
     }
 
-    fn present<T: AsRef<str>>(
+    fn present(
         &mut self,
         renderer: &mut Self::Renderer,
         surface: &mut Self::Surface,
         viewport: &Viewport,
         background_color: Color,
-        overlay: &[T],
         on_pre_present: impl FnOnce(),
     ) -> Result<(), compositor::SurfaceError> {
         present(
@@ -357,7 +354,6 @@ impl graphics::Compositor for Compositor {
             surface,
             viewport,
             background_color,
-            overlay,
             on_pre_present,
         )
     }
