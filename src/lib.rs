@@ -343,7 +343,7 @@
 //! use iced::window;
 //! use iced::{Size, Subscription};
 //!
-//! #[derive(Debug)]
+//! #[derive(Debug, Clone)]
 //! enum Message {
 //!     WindowResized(Size),
 //! }
@@ -387,7 +387,7 @@
 //! #         pub fn update(&mut self, message: Message) -> Action { unimplemented!() }
 //! #         pub fn view(&self) -> Element<Message> { unimplemented!() }
 //! #     }
-//! #     #[derive(Debug)]
+//! #     #[derive(Debug, Clone)]
 //! #     pub enum Message {}
 //! #     pub enum Action { None, Run(Task<Message>), Chat(()) }
 //! # }
@@ -399,7 +399,7 @@
 //! #         pub fn update(&mut self, message: Message) -> Task<Message> { unimplemented!() }
 //! #         pub fn view(&self) -> Element<Message> { unimplemented!() }
 //! #     }
-//! #     #[derive(Debug)]
+//! #     #[derive(Debug, Clone)]
 //! #     pub enum Message {}
 //! # }
 //! use contacts::Contacts;
@@ -532,6 +532,11 @@ pub use Alignment::Center;
 pub use Length::{Fill, FillPortion, Shrink};
 pub use alignment::Horizontal::{Left, Right};
 pub use alignment::Vertical::{Bottom, Top};
+
+pub mod debug {
+    //! Debug your applications.
+    pub use iced_debug::{Span, time, time_with};
+}
 
 pub mod task {
     //! Create runtime tasks.
@@ -692,7 +697,7 @@ pub fn run<State, Message, Theme, Renderer>(
 ) -> Result
 where
     State: Default + 'static,
-    Message: std::fmt::Debug + Send + 'static,
+    Message: program::Message + 'static,
     Theme: Default + theme::Base + 'static,
     Renderer: program::Renderer + 'static,
 {

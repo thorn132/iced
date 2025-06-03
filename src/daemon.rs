@@ -21,11 +21,11 @@ use std::borrow::Cow;
 pub fn daemon<State, Message, Theme, Renderer>(
     boot: impl application::Boot<State, Message>,
     update: impl application::Update<State, Message>,
-    view: impl for<'a> self::View<'a, State, Message, Theme, Renderer>,
+    view: impl for<'a> View<'a, State, Message, Theme, Renderer>,
 ) -> Daemon<impl Program<State = State, Message = Message, Theme = Theme>>
 where
     State: 'static,
-    Message: Send + std::fmt::Debug + 'static,
+    Message: program::Message + 'static,
     Theme: Default + theme::Base,
     Renderer: program::Renderer,
 {
@@ -44,7 +44,7 @@ where
     impl<State, Message, Theme, Renderer, Boot, Update, View> Program
         for Instance<State, Message, Theme, Renderer, Boot, Update, View>
     where
-        Message: Send + std::fmt::Debug + 'static,
+        Message: program::Message + 'static,
         Theme: Default + theme::Base,
         Renderer: program::Renderer,
         Boot: application::Boot<State, Message>,
@@ -72,7 +72,7 @@ where
             state: &mut Self::State,
             message: Self::Message,
         ) -> Task<Self::Message> {
-            self.update.update(state, message).into()
+            self.update.update(state, message)
         }
 
         fn view<'a>(
@@ -80,7 +80,7 @@ where
             state: &'a Self::State,
             window: window::Id,
         ) -> Element<'a, Self::Message, Self::Theme, Self::Renderer> {
-            self.view.view(state, window).into()
+            self.view.view(state, window)
         }
     }
 
@@ -117,10 +117,18 @@ impl<P: Program> Daemon<P> {
     where
         Self: 'static,
     {
-        #[cfg(feature = "debug")]
-        let program = iced_devtools::attach(self.raw);
+        #[cfg(all(feature = "debug", not(target_arch = "wasm32")))]
+        let program = {
+            iced_debug::init(iced_debug::Metadata {
+                name: P::name(),
+                theme: None,
+                can_time_travel: cfg!(feature = "time-travel"),
+            });
 
-        #[cfg(not(feature = "debug"))]
+            iced_devtools::attach(self.raw)
+        };
+
+        #[cfg(any(not(feature = "debug"), target_arch = "wasm32"))]
         let program = self.raw;
 
         Ok(shell::run(program, self.settings, None)?)
@@ -278,7 +286,7 @@ pub trait View<'a, State, Message, Theme, Renderer> {
         &self,
         state: &'a State,
         window: window::Id,
-    ) -> impl Into<Element<'a, Message, Theme, Renderer>>;
+    ) -> Element<'a, Message, Theme, Renderer>;
 }
 
 impl<'a, T, State, Message, Theme, Renderer, Widget>
@@ -292,7 +300,7 @@ where
         &self,
         state: &'a State,
         window: window::Id,
-    ) -> impl Into<Element<'a, Message, Theme, Renderer>> {
-        self(state, window)
+    ) -> Element<'a, Message, Theme, Renderer> {
+        self(state, window).into()
     }
 }
