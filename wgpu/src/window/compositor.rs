@@ -166,7 +166,8 @@ impl Compositor {
                     label: Some(
                         "iced_wgpu::window::compositor device descriptor",
                     ),
-                    required_features: wgpu::Features::empty(),
+                    required_features:
+                        wgpu::Features::TEXTURE_FORMAT_16BIT_NORM,
                     required_limits: required_limits.clone(),
                     memory_hints: wgpu::MemoryHints::MemoryUsage,
                     trace: wgpu::Trace::Off,
