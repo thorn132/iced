@@ -105,7 +105,8 @@ pub struct TextInput<
 {
     id: Option<widget::Id>,
     placeholder: String,
-    value: Value,
+    /// The value of the text input
+    pub value: Value,
     is_secure: bool,
     font: Option<Renderer::Font>,
     width: Length,
@@ -1459,7 +1460,8 @@ pub enum Side {
 /// The state of a [`TextInput`].
 #[derive(Debug, Default, Clone)]
 pub struct State<P: text::Paragraph> {
-    value: paragraph::Plain<P>,
+    /// The value of the state
+    pub value: paragraph::Plain<P>,
     placeholder: paragraph::Plain<P>,
     icon: paragraph::Plain<P>,
     is_focused: Option<Focus>,
