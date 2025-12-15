@@ -7,6 +7,7 @@ use crate::widget::tree::{self, Tree};
 use crate::{Border, Color, Event, Layout, Length, Rectangle, Shell, Size, Vector, Widget};
 
 use std::borrow::Borrow;
+use std::borrow::BorrowMut;
 
 /// A generic [`Widget`].
 ///
@@ -222,6 +223,17 @@ impl<'a, Message, Theme, Renderer> Borrow<dyn Widget<Message, Theme, Renderer> +
 {
     fn borrow(&self) -> &(dyn Widget<Message, Theme, Renderer> + 'a) {
         self.widget.borrow()
+    }
+}
+
+impl<'a, Message, Theme, Renderer>
+    BorrowMut<dyn Widget<Message, Theme, Renderer> + 'a>
+    for Element<'a, Message, Theme, Renderer>
+{
+    fn borrow_mut(
+        &mut self,
+    ) -> &mut (dyn Widget<Message, Theme, Renderer> + 'a) {
+        self.widget.borrow_mut()
     }
 }
 

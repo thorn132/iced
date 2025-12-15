@@ -1,4 +1,6 @@
 //! Distribute elements using a flex-based layout.
+use std::borrow::BorrowMut;
+
 // This code is heavily inspired by the [`druid`] codebase.
 //
 // [`druid`]: https://github.com/xi-editor/druid
@@ -16,7 +18,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use crate::Element;
+use crate::{Element, Widget};
 
 use crate::layout::{Limits, Node};
 use crate::widget;
@@ -59,7 +61,7 @@ impl Axis {
 /// padding and alignment to the items as needed.
 ///
 /// It returns a new layout [`Node`].
-pub fn resolve<Message, Theme, Renderer>(
+pub fn resolve<'a, Message, Theme, Renderer>(
     axis: Axis,
     renderer: &Renderer,
     limits: &Limits,
@@ -68,7 +70,7 @@ pub fn resolve<Message, Theme, Renderer>(
     padding: Padding,
     spacing: f32,
     align_items: Alignment,
-    items: &mut [Element<'_, Message, Theme, Renderer>],
+    items: &mut [impl BorrowMut<dyn Widget<Message, Theme, Renderer> + 'a>],
     trees: &mut [widget::Tree],
 ) -> Node
 where
@@ -102,7 +104,7 @@ where
     // that are also fluid in the cross axis.
     for (i, (child, tree)) in items.iter_mut().zip(trees.iter_mut()).enumerate() {
         let (fill_main_factor, fill_cross_factor) = {
-            let size = child.as_widget().size();
+            let size = child.borrow().size();
 
             axis.pack(size.width.fill_factor(), size.height.fill_factor())
         };
@@ -120,7 +122,8 @@ where
             let child_limits =
                 Limits::with_compression(Size::ZERO, Size::new(max_width, max_height), compression);
 
-            let layout = child.as_widget_mut().layout(tree, renderer, &child_limits);
+            let layout =
+                child.borrow_mut().layout(tree, renderer, &child_limits);
             let size = layout.size();
 
             available -= axis.main(size);
@@ -146,7 +149,7 @@ where
     if cross_compress && some_fill_cross {
         for (i, (child, tree)) in items.iter_mut().zip(trees.iter_mut()).enumerate() {
             let (main_size, cross_size) = {
-                let size = child.as_widget().size();
+                let size = child.borrow().size();
 
                 axis.pack(size.width, size.height)
             };
@@ -165,7 +168,8 @@ where
                     compression,
                 );
 
-                let layout = child.as_widget_mut().layout(tree, renderer, &child_limits);
+                let layout =
+                    child.borrow_mut().layout(tree, renderer, &child_limits);
                 let size = layout.size();
 
                 available -= axis.main(size);
@@ -184,7 +188,7 @@ where
     if !main_compress {
         for (i, (child, tree)) in items.iter_mut().zip(trees.iter_mut()).enumerate() {
             let (fill_main_factor, fill_cross_factor) = {
-                let size = child.as_widget().size();
+                let size = child.borrow().size();
 
                 axis.pack(size.width.fill_factor(), size.height.fill_factor())
             };
@@ -220,7 +224,12 @@ where
                     compression,
                 );
 
+<<<<<<< HEAD
                 let layout = child.as_widget_mut().layout(tree, renderer, &child_limits);
+=======
+                let layout =
+                    child.borrow_mut().layout(tree, renderer, &child_limits);
+>>>>>>> 4d743b45 (Add borrowmut to element)
                 cross = cross.max(axis.cross(layout.size()));
 
                 nodes[i] = layout;
@@ -235,7 +244,7 @@ where
     if cross_compress && some_fill_cross {
         for (i, (child, tree)) in items.iter_mut().zip(trees).enumerate() {
             let (main_size, cross_size) = {
-                let size = child.as_widget().size();
+                let size = child.borrow().size();
 
                 axis.pack(size.width, size.height)
             };
@@ -249,7 +258,12 @@ where
 
                 let child_limits = Limits::new(Size::ZERO, Size::new(max_width, max_height));
 
+<<<<<<< HEAD
                 let layout = child.as_widget_mut().layout(tree, renderer, &child_limits);
+=======
+                let layout =
+                    child.borrow_mut().layout(tree, renderer, &child_limits);
+>>>>>>> 4d743b45 (Add borrowmut to element)
                 let size = layout.size();
 
                 cross = cross.max(axis.cross(size));
