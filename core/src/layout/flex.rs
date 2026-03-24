@@ -122,8 +122,7 @@ where
             let child_limits =
                 Limits::with_compression(Size::ZERO, Size::new(max_width, max_height), compression);
 
-            let layout =
-                child.borrow_mut().layout(tree, renderer, &child_limits);
+            let layout = child.borrow_mut().layout(tree, renderer, &child_limits);
             let size = layout.size();
 
             available -= axis.main(size);
@@ -168,8 +167,7 @@ where
                     compression,
                 );
 
-                let layout =
-                    child.borrow_mut().layout(tree, renderer, &child_limits);
+                let layout = child.borrow_mut().layout(tree, renderer, &child_limits);
                 let size = layout.size();
 
                 available -= axis.main(size);
@@ -224,12 +222,7 @@ where
                     compression,
                 );
 
-<<<<<<< HEAD
-                let layout = child.as_widget_mut().layout(tree, renderer, &child_limits);
-=======
-                let layout =
-                    child.borrow_mut().layout(tree, renderer, &child_limits);
->>>>>>> 4d743b45 (Add borrowmut to element)
+                let layout = child.borrow_mut().layout(tree, renderer, &child_limits);
                 cross = cross.max(axis.cross(layout.size()));
 
                 nodes[i] = layout;
@@ -258,12 +251,7 @@ where
 
                 let child_limits = Limits::new(Size::ZERO, Size::new(max_width, max_height));
 
-<<<<<<< HEAD
-                let layout = child.as_widget_mut().layout(tree, renderer, &child_limits);
-=======
-                let layout =
-                    child.borrow_mut().layout(tree, renderer, &child_limits);
->>>>>>> 4d743b45 (Add borrowmut to element)
+                let layout = child.borrow_mut().layout(tree, renderer, &child_limits);
                 let size = layout.size();
 
                 cross = cross.max(axis.cross(size));
